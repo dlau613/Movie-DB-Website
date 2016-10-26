@@ -16,13 +16,13 @@
           </div> <!-- /.navbar-header -->
           <div class="collapse navbar-collapse" id="myNavbar">
             <ul class='nav navbar-nav'>
-              <li><a href='index.php'>Home</a></li>
+              <li id='home'><a href='index.php'>Home</a></li>
               <li id='addContent' class='dropdown'>
                 <a class='dropdown-toggle' data-toggle='dropdown' href='#'>Add Content
                 <span class='caret'></span></a>
                 <ul class='dropdown-menu'>
                   <li id='addActor'><a href='add_actor.php'>Add Actor/Director</a></li>
-                  <li><a href='#'>Add Movie Information</a></li>
+                  <li id='addMovie'><a href='add_movie.php'>Add Movie Information</a></li>
                   <li><a href='#'>Add Movie/Actor Relation</a></li> 
                   <li><a href='#'>Add Movie/Director Relation</a></li> 
                 </ul>
