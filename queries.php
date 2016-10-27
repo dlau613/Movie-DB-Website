@@ -9,9 +9,21 @@
 		$valid = "~^\d{4}-\d{2}-\d{2}$~";
 	  	return (preg_match($valid, $date));
 	}
+	function actorValid($actor) {
+		return !($actor=="");
+	}
+	function titleValid($title) {
+		return !($title == "");
+	}
+	function companyValid($company) {
+		return !($company == "");
+	}
 	function yearValid($year) {
 		$valid = "~^\d*$~";
 		return (preg_match($valid,$year));
+	}
+	function roleValid($role) {
+		return !($role == "");
 	}
 	function queryWrapper($query,$db) {
 		// $db = new mysqli('localhost','cs143','','TEST');
@@ -24,15 +36,71 @@
 		}
 		return $rs;
 	}
-	function add_actor() {
+
+	function get_actors() {
 		require('database.php');
+		$query = "SELECT id,first,last,dob FROM Actor;";
+		$results = [];
+		if (!$rs = queryWrapper($query,$db)) {
+			return $results;
+		}
+		while($row = $rs->fetch_assoc()) {
+			array_push($results,$row["id"]." ".$row["first"]." ".$row["last"]. " (".$row["dob"].")");
+		}
+		return $results;
+	}
+	function get_movies() {
+		require('database.php');
+		$query = "SELECT id,title,year FROM Movie";
+		$results = [];
+		if (!$rs = queryWrapper($query,$db)) {
+			return $results;
+		}
+		while($row = $rs->fetch_assoc()) {
+			array_push($results,$row["id"]." ".$row["title"]." "." (".$row["year"].")");
+		}
+		return $results;
+	}
+	function create_movie_tags() {
+		$movies = get_movies();
+		$ids = [];
+		$titleYear = [];
+		foreach ($movies as $idTitleYear) {
+			$arr = explode(" ",$idTitleYear);
+			array_push($ids, $arr[0]);
+			array_push($titleYear, implode(" ", array_slice($arr,1)));
+		}
+		$length = count($ids);
+		$i=0;
+		for ($i=0; $i<$length;$i++) {
+			echo '{label: "'.$titleYear[$i].'", value: "'.$ids[$i].'"},';
+		}
+	}
+	function create_actor_tags() {
+		$actors = get_actors();
+		$ids = [];
+		$nameDate = [];
+		foreach ($actors as $idNameDate) {
+			$arr = explode(" ",$idNameDate);
+			array_push($ids, $arr[0]);
+			array_push($nameDate, implode(" ", array_slice($arr,1)));
+		}
+		// echo '"'.implode('","',$nameDate).'"';
+		$length = count($ids);
+		$i=0;
+		for ($i=0; $i<$length;$i++) {
+			echo '{label: "'.$nameDate[$i].'", value: "'.$ids[$i].'"},';
+		}
+	}
+	function add_actor($db) {
+		// require('database.php');
 		//should probably stirp spaces and sanitize first
-		$identity = $_GET['identity'];
-		$fname = $_GET['first_name'];
-		$lname = $_GET['last_name'];
-		$sex = $_GET['sex'];
-		$dob = $_GET['dob'];
-		$dod = $_GET['dod'];
+		$identity = $_GET["identity"];
+		$fname = $_GET["first_name"];
+		$lname = $_GET["last_name"];
+		$sex = $_GET["sex"];
+		$dob = $_GET["dob"];
+		$dod = $_GET["dod"];
 
 		$inputError = 0;
 		if ( !fnameValid($fname)) {
@@ -61,11 +129,11 @@
 		}
 
 		$row = $rs->fetch_assoc();
-		$newID = $row['id'];
+		$newID = $row["id"];
 
 		// create insert statement. depends on date of death and actor/director
-		$query = "INSERT INTO ".$identity." VALUES (".$newID.",'".$fname."','".
-			$lname."','";
+		$query = "INSERT INTO ".$identity." VALUES (".$newID.",'".$lname."','".
+			$fname."','";
 		if ($identity == "Actor") {
 			$query = $query .$sex."','";				
 		}
@@ -78,10 +146,7 @@
 		}
 		
 		echo $query."<br>";
-		// else {
-		// 	$query = "INSERT INTO ".$identity." VALUES (".$newID.",'".$fname."','".
-		// 		$lname."','".$sex."','".$dob."','".$dod."');";
-		// }
+
 
 		if (!$rs = queryWrapper($query,$db)) {
 			return;
@@ -98,17 +163,24 @@
 			return false;
 		return true;
 	}
-	function add_movie() {
-		require('database.php');
+	function add_movie($db) {
+		// require("database.php");
 		//should probably stirp spaces and sanitize first
-		$title = $db->real_escape_string($_GET['title']);
-		$company = $db->real_escape_string($_GET['company']);
-		$year = $db->real_escape_string($_GET['year']);
-		$rating = $db->real_escape_string($_GET['rating']);
-		$genre = $_GET['genre'];
-
+		$title = $db->real_escape_string($_GET["title"]);
+		$company = $db->real_escape_string($_GET["company"]);
+		$year = $db->real_escape_string($_GET["year"]);
+		$rating = $db->real_escape_string($_GET["rating"]);
+		$genre = $_GET["genre"];
 
 		$inputError = 0;
+		if (!titleValid($title)) {
+			echo "Invald Title<br>";
+			$inputError = 1;
+		}
+		if (!companyValid($company)) {
+			echo "Invalid Company<br>";
+			$inputError = 1;
+		}
 		if ( !yearValid($year)) {
 			echo "Invalid Year<br>";
 			$inputError = 1;
@@ -122,7 +194,7 @@
 		}
 
 		$row = $rs->fetch_assoc();
-		$newID = $row['id'];
+		$newID = $row["id"];
 
 		// create insert statement. depends on date of death and actor/director
 		$query = "INSERT INTO Movie VALUES (".$newID.",'".$title."',".
@@ -135,8 +207,7 @@
 			return;
 		}
 
-		// // add movie genres as well
-		// add movie genres as well
+		// add movie genres as well. if no genre selected then array is empty and will skip loop
 		foreach ($genre as $g) {
 			add_movie_genre($db,$newID,$g);
 		}
@@ -144,5 +215,41 @@
 		if (!$rs = queryWrapper("update MaxMovieID set id=id+1;",$db)) {
 			return;
 		}
+	}
+
+	function add_m_a_r($db) {
+		$actor = $db->real_escape_string($_GET["actor"]);
+		$movie = $db->real_escape_string($_GET["movie"]);
+		$role = $db->real_escape_string($_GET["role"]);
+		$aid = $_GET["actorid"];
+		$mid = $_GET["movieid"];
+		echo $actor."<br>".$movie."<br>".$role."<br>".$aid."<br>".$mid."<br>";
+		$inputError = 0;
+		if (!actorValid($actor)) {
+			echo "Invald Actor<br>";
+			$inputError = 1;
+		}
+		if (!titleValid($movie)) {
+			echo "Invalid Title<br>";
+			$inputError = 1;
+		}
+		if (!roleValid($role)) {
+			echo "Invalid Role<br>";
+			$inputError = 1;
+		}
+		if ($inputError) {
+			return;
+		}
+
+		// create insert statement. depends on date of death and actor/director
+		$query = "INSERT INTO MovieActor VALUES (".$mid.",".$aid.",'".$role."');";
+		
+		echo $query."<br>";
+
+		if (!$rs = queryWrapper($query,$db)) {
+			echo "Failed to insert movie actor relation <br>";
+			return;
+		}
+
 	}
 ?>

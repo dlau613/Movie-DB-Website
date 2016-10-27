@@ -20,20 +20,48 @@
     <link href="css/project1c.css" rel="stylesheet">
     <script>
       $( function() {
-        var actorTags = [<?php $arr = get_actors();echo '"'.implode('","',$arr).'"'?>];
+        var availableTags = [
+                     {label: "Sao Paulo", value: 1},
+                     {label: "Sorocaba", value: 2},
+                     {label: "Paulinia", value: 3},
+                     {label: "Sao Roque", value: 4},
+        ]; 
+        var actorTags = [<?php create_actor_tags();?>];
         $( "#actortags" ).autocomplete({
           source: function(request, response) {
             var results = $.ui.autocomplete.filter(actorTags, request.term);
             response(results.slice(0, 10));
+          },
+          focus: function(event, ui) {
+            $(this).val(ui.item.label);
+            return false;
+          },
+          select: function(event,ui) {
+            $("#actorid").val(ui.item.value);
+            return false;
+          },
+          change: function(event,ui){
+            $(this).val((ui.item ? ui.item.label : ""));
           }
         });
       } );
       $( function() {
-        var movieTags = [<?php $arr = get_movies();echo '"'.implode('","',$arr).'"'?>];
+        var movieTags = [<?php create_movie_tags()?>];
         $( "#movietags" ).autocomplete({
           source: function(request, response) {
             var results = $.ui.autocomplete.filter(movieTags, request.term);
             response(results.slice(0, 10));
+          },
+          focus: function(event, ui) {
+            $(this).val(ui.item.label);
+            return false;
+          },
+          select: function(event,ui) {
+            $("#movieid").val(ui.item.value);
+            return false;
+          },
+          change: function(event,ui){
+            $(this).val((ui.item ? ui.item.label : ""));
           }
         });
       } );
@@ -65,6 +93,14 @@
                 <div class="form-group">
                   <label for="Role">Role:</label>
                   <input type="text" class="form-control" placeholder="Role" name="role" id="role">
+                </div>
+                <div class="form-group">
+                  <label for="actorid">aid</label>
+                  <input type="text" class="form-control" id="actorid" name="actorid">
+                </div>
+                <div class="form-group">
+                  <label for="movieid">mid</label>
+                  <input type="number" class="form-control" id="movieid" name="movieid">
                 </div>
                 <button type="submit" class="btn btn-default" name="add_m_a_r">Add!</button>
               </form>
