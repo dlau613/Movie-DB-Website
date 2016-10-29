@@ -20,12 +20,6 @@
     <link href="css/project1c.css" rel="stylesheet">
     <script>
       $( function() {
-        var availableTags = [
-                     {label: "Sao Paulo", value: 1},
-                     {label: "Sorocaba", value: 2},
-                     {label: "Paulinia", value: 3},
-                     {label: "Sao Roque", value: 4},
-        ]; 
         var actorTags = [<?php create_actor_tags();?>];
         $( "#actortags" ).autocomplete({
           source: function(request, response) {
@@ -85,23 +79,23 @@
               <form method="GET" action="#">
                 <div class="form-group">
                   <label for="actortags">Actor: </label>
-                  <input type="text" class="form-control" id="actortags" name="actor">
+                  <input type="text" class="form-control" placeholder="Select From Autocomplete List" id="actortags" name="actor">
                 </div>
                 <div class="form-group">
                   <label for="movietags">Movie: </label>
-                  <input type="text" class="form-control" id="movietags" name="movie">
+                  <input type="text" class="form-control" placeholder="Select From Autocomplete List" id="movietags" name="movie">
                 </div>
                 <div class="form-group">
                   <label for="Role">Role:</label>
                   <input type="text" class="form-control" placeholder="Role" name="role" id="role">
                 </div>
                 <div class="form-group">
-                  <label for="actorid">aid</label>
-                  <input type="text" class="form-control" id="actorid" name="actorid">
+                  <!-- <label for="actorid"></label> -->
+                  <input type="hidden" id="actorid" name="actorid">
                 </div>
                 <div class="form-group">
-                  <label for="movieid">mid</label>
-                  <input type="number" class="form-control" id="movieid" name="movieid">
+                  <!-- <label for="movieid"></label> -->
+                  <input type="hidden" id="movieid" name="movieid">
                 </div>
                 <button type="submit" class="btn btn-default" name="add_m_a_r">Add!</button>
               </form>

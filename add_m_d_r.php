@@ -79,19 +79,19 @@
               <form method="GET" action="#">
                 <div class="form-group">
                   <label for="directortags">Director: </label>
-                  <input type="text" class="form-control" id="directortags" name="director">
+                  <input type="text" class="form-control" placeholder="Select From Autocomplete List" id="directortags" name="director">
                 </div>
                 <div class="form-group">
                   <label for="movietags">Movie: </label>
-                  <input type="text" class="form-control" id="movietags" name="movie">
+                  <input type="text" class="form-control" placeholder="Select From Autocomplete List" id="movietags" name="movie">
                 </div>
                 <div class="form-group">
-                  <label for="directorid">did</label>
-                  <input type="text" class="form-control" id="directorid" name="directorid">
+                  <!-- <label for="directorid"></label> -->
+                  <input type="hidden" id="directorid" name="directorid">
                 </div>
                 <div class="form-group">
-                  <label for="movieid">mid</label>
-                  <input type="number" class="form-control" id="movieid" name="movieid">
+                  <!-- <label for="movieid">mid</label> -->
+                  <input type="hidden" id="movieid" name="movieid">
                 </div>
                 <button type="submit" class="btn btn-default" name="add_m_d_r">Add!</button>
               </form>

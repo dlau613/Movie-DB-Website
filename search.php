@@ -28,10 +28,37 @@
       document.getElementById("addMovieActorRelation").className="active";
     </script>
     <div class="page-content">
-      <?php
-        $id = $_GET["aid"];
-        show_actor_info($id);
-      ?>
+      <div class="container-fluid">
+        <h2>Actors</h2>
+        <div class="table-responsive">
+          <table class="table table-striped table-condensed table-hover">
+            <thead>
+              <tr><th>Name</th><th>Born</th></tr>
+            </thead>
+            <tbody>
+            <?php
+              $search = $_GET["search-term"];
+              search_actor_results($search);
+            ?>
+            </tbody>
+          </table>
+        </div>
+        <h2>Movies</h2>
+        <div class="table-responsive">
+          <table class="table table-striped table-condensed table-hover">
+            <thead>
+              <tr><th>Title</th><th>Year</th></tr>
+            </thead>
+            <tbody>
+            <?php
+              $search = $_GET["search-term"];
+              search_movie_results($search);
+            ?>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      </div>
     </div> 
 </body>
 </html>
