@@ -32,6 +32,7 @@
             var results = $.ui.autocomplete.filter(actorTags, request.term);
             response(results.slice(0, 10));
           },
+          // source: availableTags,
           focus: function(event, ui) {
             $(this).val(ui.item.label);
             return false;
@@ -72,23 +73,23 @@
       require("navbar.php");
     ?>
     <script>
+      document.getElementById("addContent").className="active";
       document.getElementById("addMovieActorRelation").className="active";
     </script>
       <div class="page-content">
-        <div class="horizontal-center">
-        <div class="container border">
+        <div class="container-fluid">
           <div class="row">
             <!-- <div class="col-sm-12 col-sm-offset-3 col-md-10 col-md-offset-2 main"> -->
             <div class="col-md-12">
               <h2>Add Movie Actor Relation</h2>
               <form method="GET" action="#">
-                <div class="ui-widget">
+                <div class="form-group">
                   <label for="actortags">Actor: </label>
-                  <input id="actortags" name="actor">
+                  <input type="text" class="form-control" id="actortags" name="actor">
                 </div>
-                <div class="ui-widget">
+                <div class="form-group">
                   <label for="movietags">Movie: </label>
-                  <input id="movietags" name="movie">
+                  <input type="text" class="form-control" id="movietags" name="movie">
                 </div>
                 <div class="form-group">
                   <label for="Role">Role:</label>
@@ -116,7 +117,6 @@
             </div>
           </div>
         </div> <!-- /.container-fluid -->
-        </div>
       </div>
 
   

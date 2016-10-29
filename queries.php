@@ -26,10 +26,6 @@
 		return !($role == "");
 	}
 	function queryWrapper($query,$db) {
-		// $db = new mysqli('localhost','cs143','','TEST');
-		// if ($db->connect_errno > 0) {
-		// 	die('Unable to connect to database [' . $db->connect_error . ']');
-		// }
 		if (!$rs = $db->query($query)) {
 			$errmsg = $db->error;
 			print "Query failed: $errmsg <br />";
@@ -37,38 +33,84 @@
 		return $rs;
 	}
 
-	function get_actors() {
-		require('database.php');
-		$query = "SELECT id,first,last,dob FROM Actor;";
-		$results = [];
+	function select_movies($db) {
+		$query = "SELECT * FROM Movie;";
 		if (!$rs = queryWrapper($query,$db)) {
-			return $results;
+			return [];
 		}
+		$results = [];
 		while($row = $rs->fetch_assoc()) {
-			array_push($results,$row["id"]." ".$row["first"]." ".$row["last"]. " (".$row["dob"].")");
+			$results[] = $row;
 		}
 		return $results;
 	}
-	function get_movies() {
-		require('database.php');
-		$query = "SELECT id,title,year FROM Movie";
-		$results = [];
+	function select_actors($db) {
+		$query = "SELECT * FROM Actor;";
 		if (!$rs = queryWrapper($query,$db)) {
-			return $results;
+			return [];
 		}
+		$results = [];
 		while($row = $rs->fetch_assoc()) {
-			array_push($results,$row["id"]." ".$row["title"]." "." (".$row["year"].")");
+			$results[] = $row;
 		}
 		return $results;
 	}
+	// function get_movies_id_title_year($db) {
+	// 	$query = "SELECT id,title,year FROM Movie;";
+	// 	if (!$rs = queryWrapper($query,$db)) {
+	// 		return [];
+	// 	}
+	// 	$results = [];
+	// 	while($row = $rs->fetch_assoc()) {
+	// 		$results[] = $row;
+	// 	}
+	// 	return $results;
+	// }
+
+	// function get_actors_id_first_last_dob($db) {
+	// 	$query = "SELECT id,first,last,dob FROM Actor;";
+	// 	$results = [];
+	// 	if (!$rs = queryWrapper($query,$db)) {
+	// 		return $results;
+	// 	}
+	// 	while($row = $rs->fetch_assoc()) {
+	// 		$results[] = $row;
+	// 	}
+	// 	return $results;
+	// }
+
+	// function get_actors_id_first_last($db) {
+	// 	$query = "SELECT id,first,last FROM Actor;";
+	// 	if (!$rs = queryWrapper($query,$db)) {
+	// 		return [];
+	// 	}
+	// 	$actors = [];
+	// 	while($row = $rs->fetch_assoc()) {
+	// 		$actors[] = $row;
+	// 	}
+	// 	return $actors;
+	// }
+
+	// function get_movies_id_title($db) {
+	// 	$query = "SELECT id,title FROM Movie;";
+	// 	if (!$rs = queryWrapper($query,$db)) {
+	// 		return [];
+	// 	}
+	// 	$movies = [];
+	// 	while($row = $rs->fetch_assoc()) {
+	// 		$movies[] = $row;
+	// 	}
+	// 	return $movies;
+	// }
 	function create_movie_tags() {
-		$movies = get_movies();
+		require("database.php");
+		// $movies = get_movies_id_title_year($db);
+		$movies = select_movies($db);
 		$ids = [];
 		$titleYear = [];
-		foreach ($movies as $idTitleYear) {
-			$arr = explode(" ",$idTitleYear);
-			array_push($ids, $arr[0]);
-			array_push($titleYear, implode(" ", array_slice($arr,1)));
+		foreach ($movies as $row) {
+			$ids[] = $row["id"];
+			$titleYear[] = $row["title"]." (".$row["year"].")";
 		}
 		$length = count($ids);
 		$i=0;
@@ -76,21 +118,227 @@
 			echo '{label: "'.$titleYear[$i].'", value: "'.$ids[$i].'"},';
 		}
 	}
+	
 	function create_actor_tags() {
-		$actors = get_actors();
+		require("database.php");
+		// $actors = get_actors_id_first_last_dob($db);
+		$actors = select_actors($db);
 		$ids = [];
 		$nameDate = [];
-		foreach ($actors as $idNameDate) {
-			$arr = explode(" ",$idNameDate);
-			array_push($ids, $arr[0]);
-			array_push($nameDate, implode(" ", array_slice($arr,1)));
+		foreach ($actors as $row) {
+			$ids[] = $row["id"];
+			$nameDate[] = $row["first"]." ".$row["last"]." (".$row["dob"].")";
 		}
-		// echo '"'.implode('","',$nameDate).'"';
 		$length = count($ids);
 		$i=0;
 		for ($i=0; $i<$length;$i++) {
 			echo '{label: "'.$nameDate[$i].'", value: "'.$ids[$i].'"},';
 		}
+	}
+	function show_actor_info($id) {
+		require("database.php");
+		$query = "SELECT * FROM Actor WHERE id=".$id.";";
+		if (!$rs = queryWrapper($query,$db)) {
+			return;
+		}
+		$row = $rs->fetch_assoc();
+		$name = $row["first"]." ".$row["last"];
+		$sex = $row["sex"];
+		$dob = $row["dob"];
+		$dod = ($row["dod"]==null) ? "Alive" : $row["dod"];
+		echo 	'<div class="container-fluid">
+				<h2>Actor Information</h2>
+				<div class="table-responsive"> 
+                	<table class="table table-hover">
+                		<thead> 
+                			<tr><th>Name</th><th>Sex</th><th>Date of Birth</th><th>Date of Death</th></tr>
+		              	</thead>
+        				<tbody>
+        					<tr>
+		        				<td>'.$name.'</td>
+		        				<td>'.$sex.'</td>
+		        				<td>'.$dob.'</td>
+		        				<td>'.$dod.'</td>
+		        			</tr>
+		        		</tbody>
+		        	</table>
+		        </div>
+		        <h3>Filmography</h3>';
+		echo 	'<div class="table-responsive">
+					<table class="table table-striped table-condensed table-hover">
+						<thead>
+							<tr><th>Movie Title</th><th>Role</th><th>Year</th></tr>
+						</thead>
+						<tbody>';
+
+		$query = "SELECT mid,title,year,role FROM MovieActor AS A, Movie AS B WHERE A.aid=".$id." AND A.mid=B.id;";
+		if (!$rs = queryWrapper($query,$db)) {
+			return;
+		}
+		while($row = $rs->fetch_assoc()) {
+			echo 	'<tr><td><a href="movie_info.php?mid='.$row["mid"].'">'.$row["title"].'</a></td><td>'.$row["role"].'</td><td>'.$row["year"].'</td></tr>';
+		}
+
+		echo 			'</tbody>
+					</table>
+				</div>
+			</div>';
+
+
+
+	}
+	
+	function show_movie_info($id) {
+		require("database.php");
+		$query = "SELECT * FROM Movie WHERE id=".$id.";";
+		if (!$rs = queryWrapper($query,$db)) {
+			return;
+		}
+		$row = $rs->fetch_assoc();
+		$title = $row["title"];
+		$year = $row["year"];
+		$company = $row["company"];
+		$rating = $row["rating"];
+		
+		$query = "SELECT genre FROM MovieGenre WHERE mid=".$id.";";
+		if (!$rs = queryWrapper($query,$db)) {
+			return;
+		}
+		$genre = [];
+		while ($row = $rs->fetch_assoc()) {
+			$genre[] = $row["genre"];
+		}
+		$query = "SELECT first,last,dob FROM MovieDirector as M, Director as D WHERE M.mid=".$id." AND M.did=D.id;";
+		if (!$rs = queryWrapper($query,$db)) {
+			return;
+		}
+		$row = $rs->fetch_assoc();
+		$director = $row["name"]." ".$row["last"]." (".$row["dob"].")";
+
+		echo 	'<div class="container-fluid ">
+					<div class="row">
+						<div class="col-xs-10">
+							<span class="h2">'.$title.'<small> ('.$year.')</small></span>
+						</div>
+						<div class="col-xs-2">
+							<span class="h3">Score</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12">
+							<span class="h5">'.$rating;
+								if (!empty($genre)) {
+									echo '&nbsp &nbsp | &nbsp &nbsp'.implode(", ",$genre);
+								}
+		echo				'</span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12">
+							<span class="h5">Director: '.$director.
+							'</span>
+						</div>
+						<div class="col-xs-12">
+							<span class="h5">Company: '.$company.
+							'</span>
+						</div>
+					</div>
+				</div>
+				<div class="container-fluid">
+				<h2>Cast</h2>';
+
+		echo 	'<div class="table-responsive">
+					<table class="table table-striped table-condensed table-hover">
+						<thead>
+							<tr><th>Name</th><th>Role</th></tr>
+						</thead>
+						<tbody>';
+
+		$query = "SELECT aid,role,first,last FROM MovieActor AS MA, Actor AS A WHERE MA.mid=".$id." AND A.id=MA.aid;";
+		if (!$rs = queryWrapper($query,$db)) {
+			return;
+		}
+		while($row = $rs->fetch_assoc()) {
+			$name = $row["first"]." ".$row["last"];
+			echo 	'<tr><td><a href="actor_info.php?aid='.$row["aid"].'">'.$name.'</a></td><td>'.$row["role"].'</td></tr>';
+		}
+
+		echo 			'</tbody>
+					</table>
+				</div>
+			</div>';
+
+		// echo 	'<div class="table-responsive"> 
+  //               	<table class="table table-hover">
+  //               		<thead> 
+  //               			<tr><th>Title</th><th>Sex</th><th>Date of Birth</th><th>Date of Death</th></tr>
+		//               	</thead>
+  //       				<tbody>
+  //       					<tr>
+		//         				<td>'.$name.'</td>
+		//         				<td>'.$sex.'</td>
+		//         				<td>'.$dob.'</td>
+		//         				<td>'.$dod.'</td>
+		//         			</tr>
+		//         		</tbody>
+		//         	</table>
+		//         </div>
+		//         <h3>Filmography</h3>';
+		// echo 	'<div class="table-responsive">
+		// 			<table class="table table-striped table-condensed table-hover">
+		// 				<thead>
+		// 					<tr><th>Movie Title</th><th>Role</th><th>Year</th></tr>
+		// 				</thead>
+		// 				<tbody>';
+
+		$query = "SELECT mid,title,year,role FROM MovieActor AS A, Movie AS B WHERE A.aid=".$id." AND A.mid=B.id;";
+		if (!$rs = queryWrapper($query,$db)) {
+			return;
+		}
+		while($row = $rs->fetch_assoc()) {
+			echo 	'<tr><td><a href="movie_info.php?mid='.$row["mid"].'">'.$row["title"].'</a></td><td>'.$row["role"].'</td><td>'.$row["year"].'</td></tr>';
+		}
+
+		echo 			'</tbody>
+					</table>
+				</div>';
+
+
+	}
+
+	function create_search_tags() {
+		require("database.php");
+		$aids = [];
+		$names = [];
+		// $actors = get_actors_id_first_last($db);
+		$actors = select_actors($db);
+		foreach ($actors as $row) {
+			$aids[] = $row["id"];
+			$names[] = $row["first"]." ".$row["last"];
+		}
+		$length = count($aids);
+		for ($i=0;$i<$length;$i++) {
+			echo '{label: "'.$names[$i].'", value: "actor_info.php?aid='.$aids[$i].'"},';
+		}
+
+		$mids = [];
+		$titles = [];
+		// $movies = get_movies_id_title($db);
+		$movies = select_movies($db);
+		foreach ($movies as $row) {
+			$mids[] = $row["id"];
+			$titles[] = $row["title"]." (".$row["year"].")";
+		}
+		$length = count($mids);
+		for ($i=0;$i<$length;$i++) {
+			echo '{label: "'.$titles[$i].'", value: "movie_info.php?mid='.$mids[$i].'"},';
+		}
+
+		// echo '{label: "Sao Paulo", value: "actor_info.php?aid=1"},
+  //                    {label: "Sorocaba", value: "actor_info.php?aid=2"},
+  //                    {label: "Paulinia", value: 3},
+  //                    {label: "Sao Roque", value: 4}';
+	
 	}
 	function add_actor($db) {
 		// require('database.php');

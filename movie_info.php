@@ -18,36 +18,30 @@
     <script src="js/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="css/jquery-ui.min.css">
     <link href="css/project1c.css" rel="stylesheet">
-
+    
   </head>
   <body>
     <?php
-      $page = "home";
       require("navbar.php");
     ?>
     <script>
-      document.getElementById('home').className='active';
+      document.getElementById("addMovieActorRelation").className="active";
     </script>
-    <div class='page-content'>
-        <div class='container-fluid border'>
-          <div class='jumbotron'>
-            Instructions!
-            <a href="actor_info.php?aid=36">Name</a>
-
-          </div>
-          <div class="row" style="margin-top:20px">
-            <div class='col-md-12'>
+      <div class="page-content">
+        <!-- <div class="horizontal-center"> -->
+        <!-- <div class="container-fluid">
+          <div class="row">
+            <div class="col-md-12"> -->
               <?php
-                // create_search_tags();
-                // if (isset($_GET['add_actor'])) {
-                //   add_actor();
-                // }
+                $id = $_GET["mid"];
+                show_movie_info($id);
               ?>
-            </div>
+            <!-- </div>
           </div>
-        </div> <!-- /.container -->
-      </div>
-    
+         
+        </div>  -->
+        <!-- </div> -->
+      </div> 
 
   
 

@@ -14,6 +14,8 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <script src="js/jquery-3.1.1.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="css/jquery-ui.min.css">
     <link href="css/project1c.css" rel="stylesheet">
 
   </head>
@@ -28,8 +30,7 @@
       document.getElementById("addActor").className="active";
     </script>
       <div class="page-content">
-        <div class="horizontal-center">
-        <div class="container border">
+        <div class="container-fluid">
           <div class="row">
             <!-- <div class="col-sm-12 col-sm-offset-3 col-md-10 col-md-offset-2 main"> -->
             <div class="col-md-12">
@@ -77,7 +78,6 @@
             </div>
           </div>
         </div> <!-- /.container-fluid -->
-        </div>
       </div>
 
   
